@@ -4,6 +4,7 @@
 namespace RadioHerrenzimmer.Api.Controllers
 {
     using System.Collections.Generic;
+    using System.Net;
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Mvc;
     using RadioHerrenzimmer.Api.Model;
@@ -20,6 +21,7 @@ namespace RadioHerrenzimmer.Api.Controllers
         /// </summary>
         /// <returns>The collection of <see cref=" Mix">mixes</see></returns>
         [HttpGet]
+        [ProducesResponseType(typeof(IEnumerable<Mix>), (int)HttpStatusCode.OK)]
         public async Task<ActionResult<IEnumerable<Mix>>> GetAsync()
         {
             await Task.Run(() => System.Console.WriteLine("GetAsync"));
@@ -36,11 +38,20 @@ namespace RadioHerrenzimmer.Api.Controllers
         /// </param>
         /// <returns>The retrieved <see cref=" Mix">mix</see></returns>
         [HttpGet("{id}")]
+        [ProducesResponseType(typeof(Mix), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(string), (int)HttpStatusCode.InternalServerError)]
         public async Task<ActionResult<Mix>> GetAsync(int id)
         {
-            await Task.Run(() => System.Console.WriteLine($"GetAsync({id})"));
+            try
+            {
+                await Task.Run(() => System.Console.WriteLine($"GetAsync({id})"));
 
-            return this.Ok(new Mix());
+                return this.Ok(new Mix());
+            }
+            catch (System.Exception ex)
+            {
+                return this.StatusCode(500, $"An error occured while trying to fulfil your request. {ex.Message}");
+            }
         }
     }
 }
